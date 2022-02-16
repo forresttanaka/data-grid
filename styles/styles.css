@@ -1,5 +1,6 @@
 .example-grid {
     display: grid;
+    margin: 20px 0;
     grid-template-columns: 1fr 1fr;
 }
 

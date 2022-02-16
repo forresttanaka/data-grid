@@ -85,31 +85,18 @@ const assays = [
     {
         id: 'assays',
         row: [
-            {
-                id: 'shRNA RNA-seq',
-                cell: 'shRNA RNA-seq',
-                children: [
-                    { cell: <div /> },
-                    { cell: <div /> },
-                ],
-            },
-            {
-                id: 'CRISPR RNA-seq',
-                cell: 'CRISPR RNA-seq',
-                children: [
-                    { cell: <div /> },
-                    { cell: <div /> },
-                ]
-            },
-            {
-                id: 'eCLIP',
-                cell: 'eCLIP',
-                children: [
-                    { cell: <div /> },
-                    { cell: <div /> },
-                ]
-            },
+            { id: 'shRNA RNA-seq', content: 'shRNA RNA-seq', columns: 2 },
+            { id: 'CRISPR RNA-seq', content: 'CRISPR RNA-seq', columns: 2 },
+            { id: 'eCLIP', content: 'eCLIP', columns: 2 },
         ],
+        row: [
+            { id: 'shRNA RNA-seq-1', content: '1' },
+            { id: 'shRNA RNA-seq-2', content: '2' },
+            { id: 'shRNA RNA-seq-3', content: '3' },
+            { id: 'shRNA RNA-seq-4', content: '4' },
+            { id: 'shRNA RNA-seq-5', content: '5' },
+            { id: 'shRNA RNA-seq-6', content: '6' },
+        ]
     },
 ];
 
@@ -118,15 +105,24 @@ const DataGrid = ({ data, startingLine = 1 }) => {
     let rowLine = startingLine;
     return data.reduce((acc, rowData) => {
         // Render the contents of the row.
+        let colLine = 1;
         const childCount = rowData.children ? rowData.children.length : 1;
         const row = rowData.row.map((cell) => {
-            return (
-                <div key={cell.id} style={{ gridRow: `${rowLine} / ${rowLine + childCount}` }} className="row-data">
+            const rowRender = (
+                <div
+                    key={cell.id}
+                    style={{
+                        gridRow: `${rowLine} / ${rowLine + childCount}`,
+                    }}
+                    className="row-data"
+                >
                     <div className="cell">
                         {cell.content}
                     </div>
                 </div>
             );
+            colLine += cell.columns || 1;
+            return rowRender;
         });
 
         // Render the child rows of the row, if any.
@@ -138,9 +134,14 @@ const DataGrid = ({ data, startingLine = 1 }) => {
 
 const ExampleGrid = () => {
     return (
-        <div className="example-grid">
-            <DataGrid data={rawSeqReps} />
-        </div>
+        <>
+            <div className="example-grid">
+                <DataGrid data={rawSeqReps} />
+            </div>
+            {/* <div className="example-grid">
+                <DataGrid data={assays} />
+            </div> */}
+        </>
     );
 };
 
