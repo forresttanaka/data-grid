@@ -1,6 +1,6 @@
 const DefaultCell = ({ children }) => {
   return (
-    <div className="p-2 w-full h-full bg-white flex items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center bg-white p-2">
       {children}
     </div>
   );
@@ -8,7 +8,7 @@ const DefaultCell = ({ children }) => {
 
 const CustomCell = ({ children }) => {
   return (
-    <div className="bg-yellow-300 p-2 w-full h-full flex items-center justify-center">
+    <div className="flex h-full  w-full items-center justify-center bg-yellow-300 p-2">
       {children}
     </div>
   );
@@ -16,7 +16,7 @@ const CustomCell = ({ children }) => {
 
 const AssayHeaderCells = ({ children }) => {
   return (
-    <div className="bg-yellow-300 p-2 w-full h-full flex items-center justify-center">
+    <div className="flex h-full w-full items-center justify-center bg-yellow-300 p-2">
       {children}
     </div>
   );
@@ -209,10 +209,10 @@ const DataGrid = ({
 const ExampleGrid = () => {
   return (
     <>
-      <div className="grid m-5 gap-px bg-black p-px">
+      <div className="m-5 grid gap-px bg-black p-px">
         <DataGrid data={rawSeqReps} />
       </div>
-      <div className="grid m-5 gap-px bg-black p-px">
+      <div className="m-5 grid gap-px bg-black p-px">
         <DataGrid data={assays} />
       </div>
     </>
