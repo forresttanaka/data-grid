@@ -1,26 +1,28 @@
+import { files } from "./data"
+
 const DefaultCell = ({ children }) => {
   return (
     <div className="flex h-full w-full items-center justify-center bg-white p-2">
       {children}
     </div>
-  );
-};
+  )
+}
 
 const CustomCell = ({ children }) => {
   return (
     <div className="flex h-full  w-full items-center justify-center bg-yellow-300 p-2">
       {children}
     </div>
-  );
-};
+  )
+}
 
 const AssayHeaderCells = ({ children }) => {
   return (
     <div className="flex h-full w-full items-center justify-center bg-yellow-300 p-2">
       {children}
     </div>
-  );
-};
+  )
+}
 
 // Vertical span columns
 const rawSeqReps = [
@@ -135,7 +137,7 @@ const rawSeqReps = [
       },
     ],
   },
-];
+]
 
 // Horizontal spans.
 const assays = [
@@ -159,7 +161,7 @@ const assays = [
       { id: "shRNA RNA-seq-6", content: "6" },
     ],
   },
-];
+]
 
 const DataGrid = ({
   data,
@@ -167,28 +169,34 @@ const DataGrid = ({
   startingRow = 1,
   startingCol = 1,
 }) => {
-  let rowLine = startingRow;
+  let rowLine = startingRow
   return data.reduce((acc, rowData) => {
     // Render the cells of a row.
-    const childCount = rowData.children?.length || 1;
-    let colLine = startingCol;
-    const CellWrapper = rowData.RowCells || Cell;
-    const row = rowData.row.map((cell) => {
+    const childCount = rowData.children?.length || 1
+    let colLine = startingCol
+    const CellWrapper = rowData.RowCells || Cell
+    const row = rowData.row.map((cell, index) => {
       // Render a single cell.
       const rowRender = (
         <div
-          key={cell.id}
+          key={`${rowData.id}-${cell.id}`}
           style={{
             gridRow: `${rowLine} / ${rowLine + childCount}`,
             gridColumn: `${colLine} / ${colLine + (cell.columns || 1)}`,
           }}
         >
-          <CellWrapper>{cell.content}</CellWrapper>
+          <CellWrapper
+            rowId={rowData.id}
+            rowData={rowData.row}
+            cellIndex={index}
+          >
+            {cell.content}
+          </CellWrapper>
         </div>
-      );
-      colLine += cell.columns || 1;
-      return rowRender;
-    });
+      )
+      colLine += cell.columns || 1
+      return rowRender
+    })
 
     // Render the child rows of the row, if any.
     const children = rowData.children ? (
@@ -200,11 +208,56 @@ const DataGrid = ({
       />
     ) : (
       []
-    );
-    rowLine += childCount;
-    return acc.concat(row).concat(children);
-  }, []);
-};
+    )
+    rowLine += childCount
+    return acc.concat(row).concat(children)
+  }, [])
+}
+
+const fileCols = [
+  {
+    id: "accession",
+    title: "Accession",
+  },
+  {
+    id: "dataset",
+    title: "Dataset",
+  },
+  {
+    id: "file_format",
+    title: "File format",
+  },
+  {
+    id: "output_type",
+    title: "Output type",
+  },
+  {
+    id: "assembly",
+    title: "Mapping assembly",
+  },
+  {
+    id: "status",
+    title: "File status",
+  },
+]
+
+const convertObjectArrayToDataGrid = (items, columns, keyProp) => {
+  return items.map((item) => {
+    return {
+      id: item[keyProp],
+      row: columns.map((column) => {
+        return { id: column.id, content: item[column.id] }
+      }),
+    }
+  })
+}
+
+const SortableGrid = ({ data, columns, keyProp }) => {
+  const convertedData = convertObjectArrayToDataGrid(data, columns, keyProp)
+  console.log(convertedData)
+  return <DataGrid data={convertedData} />
+  return null
+}
 
 const ExampleGrid = () => {
   return (
@@ -215,8 +268,11 @@ const ExampleGrid = () => {
       <div className="m-5 grid gap-px bg-black p-px">
         <DataGrid data={assays} />
       </div>
+      <div className="m-5 grid gap-px bg-black p-px">
+        <SortableGrid data={files} columns={fileCols} keyProp="uuid" />
+      </div>
     </>
-  );
-};
+  )
+}
 
-export default ExampleGrid;
+export default ExampleGrid
