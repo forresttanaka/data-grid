@@ -13,7 +13,6 @@ const rawSeqReps = [
       { id: "1", content: "1" },
       { id: "ENCLB025MTA", content: "ENCLB025MTA" },
     ],
-    css: "row-data", // row CSS class
     children: [
       {
         id: "ENCFF627NRL",
@@ -25,7 +24,6 @@ const rawSeqReps = [
           {
             id: "ENCFF627NRL-fastq",
             content: "fastq",
-            style: "font-size: 1.3rem",
           },
           { id: "ENCFF627NRL-PE151nt", content: "PE151nt" },
           { id: "ENCFF627NRL-1", content: "1" },
@@ -36,9 +34,11 @@ const rawSeqReps = [
           },
           { id: "ENCFF627NRL-2020-09-30", content: "2020-09-30" },
           { id: "ENCFF627NRL-5.45 GB", content: "5.45 GB" },
-          { id: "ENCFF627NRL-released", content: <b>released</b> },
+          {
+            id: "ENCFF627NRL-released",
+            content: <div className="font-bold">released</div>,
+          },
         ],
-        css: "file-data",
       },
       {
         id: "ENCFF740ARM",
@@ -57,7 +57,7 @@ const rawSeqReps = [
           },
           { id: "ENCFF740ARM-2020-09-30", content: "2020-09-30" },
           { id: "ENCFF740ARM-5.66 GB", content: "5.66 GB" },
-          { id: "ENCFF740ARM-released", content: <b>released</b> },
+          { id: "ENCFF740ARM-released", content: "released" },
         ],
       },
     ],
@@ -65,7 +65,6 @@ const rawSeqReps = [
   {
     id: "ENCLB374BFP",
     row: [{ content: "2" }, { content: "ENCLB374BFP", css: "unique-cell" }],
-    style: "font-weight", // row CSS style
     children: [
       {
         id: "ENCLB603PXR",
@@ -77,7 +76,6 @@ const rawSeqReps = [
           {
             id: "ENCLB603PXR-fastq",
             content: "fastq",
-            style: "font-size: 1.3rem",
           },
           { id: "ENCLB603PXR-PE151nt", content: "PE151nt" },
           { id: "ENCLB603PXR-1", content: "1" },
@@ -88,9 +86,8 @@ const rawSeqReps = [
           },
           { id: "ENCLB603PXR-2020-09-30", content: "2020-09-30" },
           { id: "ENCLB603PXR-4.39 GB", content: "4.39 GB" },
-          { id: "ENCLB603PXR-released", content: <b>released</b> },
+          { id: "ENCLB603PXR-released", content: "released" },
         ],
-        css: "file-data",
       },
       {
         id: "ENCFF740ARM",
@@ -109,22 +106,25 @@ const rawSeqReps = [
           },
           { id: "ENCFF740ARM-2020-09-30", content: "2020-09-30" },
           { id: "ENCFF740ARM-4.6 GB", content: "4.6 GB" },
-          { id: "ENCFF740ARM-released", content: <b>released</b> },
+          { id: "ENCFF740ARM-released", content: "released" },
         ],
       },
     ],
   },
-]
+];
 
 // Horizontal spans.
 const assays = [
   {
-    id: "assays",
+    id: "titles",
     row: [
       { id: "shRNA RNA-seq", content: "shRNA RNA-seq", columns: 2 },
       { id: "CRISPR RNA-seq", content: "CRISPR RNA-seq", columns: 2 },
       { id: "eCLIP", content: "eCLIP", columns: 2 },
     ],
+  },
+  {
+    id: "assays",
     row: [
       { id: "shRNA RNA-seq-1", content: "1" },
       { id: "shRNA RNA-seq-2", content: "2" },
@@ -134,14 +134,35 @@ const assays = [
       { id: "shRNA RNA-seq-6", content: "6" },
     ],
   },
-]
+];
 
-const DataGrid = ({ data, startingRow = 1, startingCol = 1 }) => {
-  let rowLine = startingRow
+const DefaultCell = ({ children }) => {
+  return (
+    <div className="p-2 w-full h-full bg-white flex items-center justify-center">
+      {children}
+    </div>
+  );
+};
+
+const CustomCell = ({ children }) => {
+  return (
+    <div className="bg-yellow-300 p-2 w-full h-full flex items-center justify-center">
+      {children}
+    </div>
+  );
+};
+
+const DataGrid = ({
+  data,
+  Cell = DefaultCell,
+  startingRow = 1,
+  startingCol = 1,
+}) => {
+  let rowLine = startingRow;
   return data.reduce((acc, rowData) => {
     // Render the cells of a row.
-    const childCount = rowData.children?.length || 1
-    let colLine = startingCol
+    const childCount = rowData.children?.length || 1;
+    let colLine = startingCol;
     const row = rowData.row.map((cell) => {
       // Render a single cell.
       const rowRender = (
@@ -151,41 +172,41 @@ const DataGrid = ({ data, startingRow = 1, startingCol = 1 }) => {
             gridRow: `${rowLine} / ${rowLine + childCount}`,
             gridColumn: `${colLine} / ${colLine + (cell.columns || 1)}`,
           }}
-          className="row-data"
         >
-          <div className="cell">{cell.content}</div>
+          <Cell>{cell.content}</Cell>
         </div>
-      )
-      colLine += cell.columns || 1
-      return rowRender
-    })
+      );
+      colLine += cell.columns || 1;
+      return rowRender;
+    });
 
     // Render the child rows of the row, if any.
     const children = rowData.children ? (
       <DataGrid
         data={rowData.children}
+        Cell={Cell}
         startingRow={rowLine}
         startingCol={colLine}
       />
     ) : (
       []
-    )
-    rowLine += childCount
-    return acc.concat(row).concat(children)
-  }, [])
-}
+    );
+    rowLine += childCount;
+    return acc.concat(row).concat(children);
+  }, []);
+};
 
 const ExampleGrid = () => {
   return (
     <>
-      <div className="example-grid">
+      <div className="grid m-5 gap-px bg-black p-px">
         <DataGrid data={rawSeqReps} />
       </div>
-      {/* <div className="example-grid">
-                <DataGrid data={assays} />
-            </div> */}
+      <div className="grid m-5 gap-px bg-black p-px">
+        <DataGrid data={assays} />
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default ExampleGrid
+export default ExampleGrid;
