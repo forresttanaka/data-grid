@@ -1,3 +1,27 @@
+const DefaultCell = ({ children }) => {
+  return (
+    <div className="p-2 w-full h-full bg-white flex items-center justify-center">
+      {children}
+    </div>
+  );
+};
+
+const CustomCell = ({ children }) => {
+  return (
+    <div className="bg-yellow-300 p-2 w-full h-full flex items-center justify-center">
+      {children}
+    </div>
+  );
+};
+
+const AssayHeaderCells = ({ children }) => {
+  return (
+    <div className="bg-yellow-300 p-2 w-full h-full flex items-center justify-center">
+      {children}
+    </div>
+  );
+};
+
 // Vertical span columns
 const rawSeqReps = [
   {
@@ -122,6 +146,7 @@ const assays = [
       { id: "CRISPR RNA-seq", content: "CRISPR RNA-seq", columns: 2 },
       { id: "eCLIP", content: "eCLIP", columns: 2 },
     ],
+    RowCells: AssayHeaderCells,
   },
   {
     id: "assays",
@@ -136,22 +161,6 @@ const assays = [
   },
 ];
 
-const DefaultCell = ({ children }) => {
-  return (
-    <div className="p-2 w-full h-full bg-white flex items-center justify-center">
-      {children}
-    </div>
-  );
-};
-
-const CustomCell = ({ children }) => {
-  return (
-    <div className="bg-yellow-300 p-2 w-full h-full flex items-center justify-center">
-      {children}
-    </div>
-  );
-};
-
 const DataGrid = ({
   data,
   Cell = DefaultCell,
@@ -163,6 +172,7 @@ const DataGrid = ({
     // Render the cells of a row.
     const childCount = rowData.children?.length || 1;
     let colLine = startingCol;
+    const CellWrapper = rowData.RowCells || Cell;
     const row = rowData.row.map((cell) => {
       // Render a single cell.
       const rowRender = (
@@ -173,7 +183,7 @@ const DataGrid = ({
             gridColumn: `${colLine} / ${colLine + (cell.columns || 1)}`,
           }}
         >
-          <Cell>{cell.content}</Cell>
+          <CellWrapper>{cell.content}</CellWrapper>
         </div>
       );
       colLine += cell.columns || 1;
