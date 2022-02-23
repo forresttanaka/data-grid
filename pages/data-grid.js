@@ -1,3 +1,7 @@
+import { useState } from "react"
+import PropTypes from "prop-types"
+import _ from "lodash"
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/solid"
 import { files } from "./data"
 
 const DefaultCell = ({ children }) => {
@@ -10,7 +14,7 @@ const DefaultCell = ({ children }) => {
 
 const CustomCell = ({ children }) => {
   return (
-    <div className="flex h-full  w-full items-center justify-center bg-yellow-300 p-2">
+    <div className="flex h-full w-full items-center justify-center bg-yellow-300 p-2">
       {children}
     </div>
   )
@@ -21,6 +25,31 @@ const AssayHeaderCells = ({ children }) => {
     <div className="flex h-full w-full items-center justify-center bg-yellow-300 p-2">
       {children}
     </div>
+  )
+}
+
+const SortableGridCells = ({ rowData, cellIndex, rowMeta, children }) => {
+  const handleSortClick = () => {
+    rowMeta.handleSortClick(rowData[cellIndex].id)
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleSortClick}
+      className="flex h-full w-full items-center justify-between bg-gray-200 p-2 font-semibold hover:bg-gray-300"
+    >
+      {children}{" "}
+      {rowMeta.sortBy === rowData[cellIndex].id ? (
+        rowMeta.sortDirection === "asc" ? (
+          <ChevronUpIcon className="h-6 w-6" />
+        ) : (
+          <ChevronDownIcon className="h-6 w-6" />
+        )
+      ) : (
+        <div className="h-6 w-6" />
+      )}
+    </button>
   )
 }
 
@@ -36,32 +65,32 @@ const rawSeqReps = [
   {
     id: "ENCLB025MTA",
     row: [
-      { id: "1", content: "1" },
-      { id: "ENCLB025MTA", content: "ENCLB025MTA" },
+      { id: "replicate", content: "1" },
+      { id: "library", content: "ENCLB025MTA" },
     ],
     children: [
       {
-        id: "ENCFF627NRL",
+        id: "ENCFF935LZB",
         row: [
           {
-            id: "ENCFF627NRL-ENCFF935LZB",
+            id: "file",
             content: <a href="#">ENCFF935LZB</a>,
           },
           {
-            id: "ENCFF627NRL-fastq",
+            id: "file_type",
             content: "fastq",
           },
-          { id: "ENCFF627NRL-PE151nt", content: "PE151nt" },
-          { id: "ENCFF627NRL-1", content: "1" },
-          { id: "ENCFF627NRL-reads", content: "reads" },
+          { id: "pair", content: "PE151nt" },
+          { id: "replicate", content: "1" },
+          { id: "output_type", content: "reads" },
           {
-            id: "ENCFF627NRL-Mats Ljungman, UMichigan",
+            id: "lab",
             content: "Mats Ljungman, UMichigan",
           },
-          { id: "ENCFF627NRL-2020-09-30", content: "2020-09-30" },
-          { id: "ENCFF627NRL-5.45 GB", content: "5.45 GB" },
+          { id: "date_created", content: "2020-09-30" },
+          { id: "file_size", content: "5.45 GB" },
           {
-            id: "ENCFF627NRL-released",
+            id: "status",
             content: <div className="font-bold">released</div>,
           },
         ],
@@ -70,69 +99,72 @@ const rawSeqReps = [
         id: "ENCFF740ARM",
         row: [
           {
-            id: "ENCFF740ARM-ENCFF740ARM",
+            id: "file",
             content: <a href="#">ENCFF740ARM</a>,
           },
-          { id: "ENCFF740ARM-fastq", content: "fastq" },
-          { id: "ENCFF740ARM-PE151nt", content: "PE151nt" },
-          { id: "ENCFF740ARM-2", content: "2" },
-          { id: "ENCFF740ARM-reads", content: "reads" },
+          { id: "file_type", content: "fastq" },
+          { id: "pair", content: "PE151nt" },
+          { id: "replicate", content: "2" },
+          { id: "output_type", content: "reads" },
           {
-            id: "ENCFF740ARM-Mats Ljungman, UMichigan",
+            id: "lab",
             content: "Mats Ljungman, UMichigan",
           },
-          { id: "ENCFF740ARM-2020-09-30", content: "2020-09-30" },
-          { id: "ENCFF740ARM-5.66 GB", content: "5.66 GB" },
-          { id: "ENCFF740ARM-released", content: "released" },
+          { id: "date_created", content: "2020-09-30" },
+          { id: "file_size", content: "5.66 GB" },
+          { id: "status", content: "released" },
         ],
       },
     ],
   },
   {
     id: "ENCLB374BFP",
-    row: [{ content: "2" }, { content: "ENCLB374BFP", css: "unique-cell" }],
+    row: [
+      { id: "replicate", content: "2" },
+      { id: "library", content: "ENCLB374BFP" },
+    ],
     children: [
       {
         id: "ENCLB603PXR",
         row: [
           {
-            id: "ENCLB603PXR-ENCFF323HQR",
+            id: "file",
             content: <a href="#">ENCFF323HQR</a>,
           },
           {
-            id: "ENCLB603PXR-fastq",
+            id: "file_type",
             content: "fastq",
           },
-          { id: "ENCLB603PXR-PE151nt", content: "PE151nt" },
-          { id: "ENCLB603PXR-1", content: "1" },
-          { id: "ENCLB603PXR-reads", content: "reads" },
+          { id: "pair", content: "PE151nt" },
+          { id: "replicate", content: "1" },
+          { id: "output_type", content: "reads" },
           {
-            id: "ENCLB603PXR-Mats Ljungman, UMichigan",
+            id: "lab",
             content: "Mats Ljungman, UMichigan",
           },
-          { id: "ENCLB603PXR-2020-09-30", content: "2020-09-30" },
-          { id: "ENCLB603PXR-4.39 GB", content: "4.39 GB" },
-          { id: "ENCLB603PXR-released", content: "released" },
+          { id: "date_created", content: "2020-09-30" },
+          { id: "file_size", content: "4.39 GB" },
+          { id: "status", content: "released" },
         ],
       },
       {
-        id: "ENCFF740ARM",
+        id: "ENCFF085SJR",
         row: [
           {
-            id: "ENCFF740ARM-ENCFF085SJR",
+            id: "file",
             content: <a href="#">ENCFF085SJR</a>,
           },
-          { id: "ENCFF740ARM-fastq", content: "fastq" },
-          { id: "ENCFF740ARM-PE151nt", content: "PE151nt" },
-          { id: "ENCFF740ARM-2", content: "2" },
-          { id: "ENCFF740ARM-reads", content: "reads" },
+          { id: "file_type", content: "fastq" },
+          { id: "pair", content: "PE151nt" },
+          { id: "replicate", content: "2" },
+          { id: "output_type", content: "reads" },
           {
-            id: "ENCFF740ARM-Mats Ljungman, UMichigan",
+            id: "lab",
             content: "Mats Ljungman, UMichigan",
           },
-          { id: "ENCFF740ARM-2020-09-30", content: "2020-09-30" },
-          { id: "ENCFF740ARM-4.6 GB", content: "4.6 GB" },
-          { id: "ENCFF740ARM-released", content: "released" },
+          { id: "date_created", content: "2020-09-30" },
+          { id: "file_size", content: "4.6 GB" },
+          { id: "status", content: "released" },
         ],
       },
     ],
@@ -188,6 +220,7 @@ const DataGrid = ({
           <CellWrapper
             rowId={rowData.id}
             rowData={rowData.row}
+            rowMeta={rowData.rowMeta}
             cellIndex={index}
           >
             {cell.content}
@@ -201,14 +234,13 @@ const DataGrid = ({
     // Render the child rows of the row, if any.
     const children = rowData.children ? (
       <DataGrid
+        key={`${rowData.id}-children`}
         data={rowData.children}
         Cell={Cell}
         startingRow={rowLine}
         startingCol={colLine}
       />
-    ) : (
-      []
-    )
+    ) : null
     rowLine += childCount
     return acc.concat(row).concat(children)
   }, [])
@@ -252,11 +284,88 @@ const convertObjectArrayToDataGrid = (items, columns, keyProp) => {
   })
 }
 
-const SortableGrid = ({ data, columns, keyProp }) => {
-  const convertedData = convertObjectArrayToDataGrid(data, columns, keyProp)
-  console.log(convertedData)
-  return <DataGrid data={convertedData} />
-  return null
+// enum-like structor to define the column sorting directions.
+const sortDirections = {
+  // Ascending sort
+  ASC: "asc",
+  // Descending sort
+  DESC: "desc",
+}
+
+const sortData = (data, sortBy, sortDirections) => {
+  return _.orderBy(data, [sortBy], [sortDirections])
+}
+
+/**
+ * Display a sortable grid of data according to the provided columns. The data has to be an array
+ * of objects requiring no column nor row spans.
+ */
+const SortableGrid = ({ data, columns, initialSort = {}, keyProp }) => {
+  // id of the currently sorted column.
+  const [sortBy, setSortBy] = useState(initialSort.columnId || columns[0].id)
+  // Whether the currently sorted column is sorted in ascending or descending order.
+  const [sortDirection, setSortDirection] = useState(
+    initialSort.direction,
+    sortDirections.ASC
+  )
+
+  /**
+   *
+   * @param {string} column - id of the column to sort by.
+   */
+  const handleSortClick = (column) => {
+    if (sortBy === column) {
+      // Sorted column clicked. Reverse the sort direction.
+      setSortDirection(
+        sortDirection === sortDirections.ASC
+          ? sortDirections.DESC
+          : sortDirections.ASC
+      )
+    } else {
+      // New column clicked. Sort by this column.
+      setSortBy(column)
+      setSortDirection(sortDirections.ASC)
+    }
+  }
+
+  // Generate the cells within the header row.
+  const headerCells = columns.map((column) => {
+    return {
+      id: column.id,
+      content: column.title,
+    }
+  })
+
+  // Generate the header row itself, containing the cells.
+  const headerRow = [
+    {
+      id: "header",
+      row: headerCells,
+      rowMeta: { sortBy, sortDirection, handleSortClick },
+      RowCells: SortableGridCells,
+    },
+  ]
+
+  // Convert the data (simple array of objects) into a data grid array and render the table.
+  const sortedData = sortData(data, sortBy, sortDirection)
+  const dataRows = convertObjectArrayToDataGrid(sortedData, columns, keyProp)
+  return <DataGrid data={headerRow.concat(dataRows)} />
+}
+
+SortableGrid.propTypes = {
+  // Data to display in the sortable grid
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Column definitions for the grid
+  columns: PropTypes.arrayOf(PropTypes.object).isRequired,
+  // Which prop of the objects in the data array to use as the React key
+  keyProp: PropTypes.string.isRequired,
+  // Optional initial sorting of the grid
+  initialSort: PropTypes.shape({
+    // id of the column to sort by
+    columnId: PropTypes.string,
+    // sort direction
+    direction: PropTypes.oneOf(Object.values(sortDirections)),
+  }),
 }
 
 const ExampleGrid = () => {
